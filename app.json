@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Project-for-AI",
+    "name": "Two-Brain Forensic Interface", 
     "slug": "Project-for-AI",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/your-new-icon.png", 
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -13,17 +13,33 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cla2004.projectforai"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/your-new-icon.png", 
+        "backgroundColor": "#0b0e14" 
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.cla2004.projectforai"
     },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow this app to access your video files for forensic deepfake analysis."
+        }
+      ]
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b56991fc-4e7d-44cb-85d5-ed94f3696071"
+      }
+    },
+    "owner": "cla2004"
   }
 }
