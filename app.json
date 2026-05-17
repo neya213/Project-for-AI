@@ -4,9 +4,9 @@
     "slug": "Project-for-AI",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo.png",
+    "icon": "./assets/Logo.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#0b0e14"
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.png",
+        "foregroundImage": "./assets/Logo.png",
         "backgroundColor": "#0b0e14"
       },
       "edgeToEdgeEnabled": true,
@@ -35,8 +35,7 @@
         {
           "backgroundColor": "#0b0e14"
         }
-      ],
-      "expo-font"
+      ]
     ],
     "web": {
       "favicon": "./assets/favicon.png"

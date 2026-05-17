@@ -2,14 +2,14 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
-import LoginScreen from './src/screens/LoginScreen';
+import LoginScreen from './src/screens/LogInScreen'; 
 import ForensicDashboard from './src/screens/ForensicDashboard';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Authentication tracking state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     async function prepareSystem() {
@@ -48,10 +48,8 @@ export default function App() {
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <StatusBar style="light" />
       {isAuthenticated ? (
-        // Render main engine dashboard when user enters credentials
         <ForensicDashboard />
       ) : (
-        // Show secure gateway screen initially
         <LoginScreen onLoginSuccess={() => setIsAuthenticated(true)} />
       )}
     </View>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
   Text, 
@@ -9,7 +9,8 @@ import {
   Platform, 
   TouchableWithoutFeedback, 
   Keyboard,
-  Alert
+  Alert,
+  ScrollView
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -17,96 +18,119 @@ export default function LoginScreen({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secureText, setSecureText] = useState(true);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  // Monitor keyboard visibility state dynamically
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => setIsKeyboardVisible(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => setIsKeyboardVisible(false)
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const handleLogin = () => {
-    // Basic verification check
     if (!email.trim() || !password.trim()) {
       Alert.alert("Authentication Failure", "Please supply all required security credentials.");
       return;
     }
-
-    // Pass verification up to App.js to unlock the main forensic panel
     onLoginSuccess();
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-        style={styles.container}
-      >
-        <View style={styles.innerContainer}>
-          
-          {/* Header Branding Section */}
-          <View style={styles.logoSection}>
-            <View style={styles.iconShield}>
-              <Ionicons name="shield-checkmark-sharp" size={40} color="#748ffc" />
-            </View>
-            <Text style={styles.title}>TWO-BRAIN HYBRID</Text>
-            <Text style={styles.subtitle}>SECURE FORENSIC ENCLAVE</Text>
-          </View>
-
-          {/* Input Fields Container */}
-          <View style={styles.formContainer}>
+      <View style={styles.container}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+          style={{ flex: 1 }}
+        >
+          <ScrollView 
+            contentContainerStyle={styles.scrollContent}
+            bounces={false}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
             
-            {/* Email Field */}
-            <Text style={styles.inputLabel}>OPERATOR IDENTITY (EMAIL)</Text>
-            <View style={styles.inputWrapper}>
-              <Ionicons name="person-outline" size={20} color="#495057" style={styles.inputIcon} />
-              <TextInput 
-                style={styles.input}
-                placeholder="operator@forensic.enclave"
-                placeholderTextColor="#495057"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
-              />
+            {/* Header Branding Section */}
+            <View style={styles.logoSection}>
+              <View style={styles.iconShield}>
+                <Ionicons name="shield-checkmark-sharp" size={40} color="#748ffc" />
+              </View>
+              <Text style={styles.title}>TWO-BRAIN HYBRID</Text>
+              <Text style={styles.subtitle}>SECURE FORENSIC ENCLAVE</Text>
             </View>
 
-            {/* Password Field */}
-            <Text style={styles.inputLabel}>SECURITY KEYCODE</Text>
-            <View style={styles.inputWrapper}>
-              <Ionicons name="lock-closed-outline" size={20} color="#495057" style={styles.inputIcon} />
-              <TextInput 
-                style={styles.input}
-                placeholder="••••••••••••"
-                placeholderTextColor="#495057"
-                secureTextEntry={secureText}
-                autoCapitalize="none"
-                value={password}
-                onChangeText={setPassword}
-              />
-              <TouchableOpacity onPress={() => setSecureText(!secureText)}>
-                <Ionicons 
-                  name={secureText ? "eye-off-outline" : "eye-outline"} 
-                  size={20} 
-                  color="#495057" 
+            {/* Input Fields Container */}
+            <View style={styles.formContainer}>
+              
+              {/* Email Field */}
+              <Text style={styles.inputLabel}>Gmail</Text>
+              <View style={styles.inputWrapper}>
+                <Ionicons name="person-outline" size={20} color="#495057" style={styles.inputIcon} />
+                <TextInput 
+                  style={styles.input}
+                  placeholder="operator@forensic.enclave"
+                  placeholderTextColor="#495057"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  value={email}
+                  onChangeText={setEmail}
                 />
+              </View>
+
+              {/* Password Field */}
+              <Text style={styles.inputLabel}>Password</Text>
+              <View style={styles.inputWrapper}>
+                <Ionicons name="lock-closed-outline" size={20} color="#495057" style={styles.inputIcon} />
+                <TextInput 
+                  style={styles.input}
+                  placeholder="••••••••••••"
+                  placeholderTextColor="#495057"
+                  secureTextEntry={secureText}
+                  autoCapitalize="none"
+                  value={password}
+                  onChangeText={setPassword}
+                />
+                <TouchableOpacity onPress={() => setSecureText(!secureText)}>
+                  <Ionicons 
+                    name={secureText ? "eye-off-outline" : "eye-outline"} 
+                    size={20} 
+                    color="#495057" 
+                  />
+                </TouchableOpacity>
+              </View>
+
+              {/* Forgot Prompt */}
+              <TouchableOpacity style={styles.forgotAnchor}>
+                <Text style={styles.forgotText}>Forgot Password?</Text>
               </TouchableOpacity>
+
+              {/* Action Access Button */}
+              <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                <Text style={styles.loginButtonText}>Log-in</Text>
+                <Ionicons name="arrow-forward-sharp" size={18} color="#0b0e14" />
+              </TouchableOpacity>
+
             </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
 
-            {/* Simulated Forgot Prompt */}
-            <TouchableOpacity style={styles.forgotAnchor}>
-              <Text style={styles.forgotText}>Request Key Reset?</Text>
-            </TouchableOpacity>
-
-            {/* Action Access Button */}
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-              <Text style={styles.loginButtonText}>INITIALIZE SESSION</Text>
-              <Ionicons name="arrow-forward-sharp" size={18} color="#0b0e14" />
-            </TouchableOpacity>
-
-          </View>
-
-          {/* Footer Clearance Notice */}
+        {/* Footer sits at absolute bottom but vanishes when keyboard is deployed */}
+        {!isKeyboardVisible && (
           <View style={styles.footer}>
             <Ionicons name="alert-circle-outline" size={14} color="#495057" />
             <Text style={styles.footerText}>Authorized Forensic Clearance Required.</Text>
           </View>
-
-        </View>
-      </KeyboardAvoidingView>
+        )}
+      </View>
     </TouchableWithoutFeedback>
   );
 }
@@ -116,14 +140,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0b0e14',
   },
-  innerContainer: {
-    flex: 1,
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 30,
+    paddingBottom: 80, // Leaves clean space for the absolute footer
   },
   logoSection: {
     alignItems: 'center',
-    marginBottom: 50,
+    marginBottom: 40,
   },
   iconShield: {
     width: 80,
@@ -194,11 +219,6 @@ const styles = StyleSheet.create({
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#748ffc',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 3,
   },
   loginButtonText: {
     color: '#0b0e14',
@@ -212,9 +232,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    bottom: 40,
+    bottom: 30,
     left: 0,
     right: 0,
+    backgroundColor: '#0b0e14',
   },
   footerText: {
     color: '#495057',

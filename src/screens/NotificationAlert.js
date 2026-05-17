@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, ActivityIndicator, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 
-export default function ForensicDashboard() {
+export default function ForensicDashboard({ isDarkMode, theme }) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [video, setVideo] = useState(null);
+  
+  // Track system analytical findings state
+  const [showEvidence, setShowEvidence] = useState(false);
+  const [analysisVerdict, setAnalysisVerdict] = useState(null);
 
   const pickVideo = async () => {
-    // Request media library permissions
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
     if (status !== 'granted') {
@@ -25,9 +28,10 @@ export default function ForensicDashboard() {
 
       if (!result.canceled) {
         const uri = result.assets[0].uri;
-        // Basic check for MP4
         if (uri.toLowerCase().endsWith('.mp4')) {
           setVideo(uri);
+          setShowEvidence(false); // Clear previous runs
+          setAnalysisVerdict(null);
         } else {
           Alert.alert("Invalid Format", "Please select an MP4 file for forensic analysis.");
         }
@@ -37,20 +41,21 @@ export default function ForensicDashboard() {
     }
   };
 
-  // Triggered when button is pressed
   const handleStartAnalysis = () => {
     setIsAnalyzing(true);
+    setShowEvidence(false);
 
-    // Simulate the bimodal analysis delay
+    // Simulate bimodal processing pipeline delay
     setTimeout(() => {
       setIsAnalyzing(false);
+      setAnalysisVerdict("TAMPERED");
       
-      // THE FORENSIC ALERT OUTPUT
+      // CRITICAL FORENSIC OVERRIDE ALERT
       Alert.alert(
-        "Analysis Complete",
-        "The Two-Brain Hybrid System has finished scanning.\n\n• Visual Integrity: 98.4%\n• Audio Sync: Match Detected\n\nVerdict: GENUINE",
+        "CRITICAL ALERT: MANIPULATION DETECTED",
+        "The Two-Brain Hybrid System has identified structural inconsistencies within the target media asset.\n\n• Visual Integrity: 42.1% (FAIL)\n• Audio Sync: Phase Discrepancy Found\n\nVerdict: SYNTHETIC / DEEPFAKE",
         [
-          { text: "Download Report", onPress: () => console.log("Report logic here") },
+          { text: "Review Evidence", onPress: () => setShowEvidence(true) },
           { text: "Dismiss", style: "cancel" }
         ]
       );
@@ -58,57 +63,103 @@ export default function ForensicDashboard() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.centeredWrapper}>
           
           <View style={styles.headerGroup}>
-            <Text style={styles.header}>Two-Brain Hybrid System</Text>
-            <Text style={styles.subHeader}>Bimodal Deepfake Detection Interface</Text>
+            <Text style={[styles.header, { color: theme.textMain }]}>Two-Brain Hybrid System</Text>
+            <Text style={[styles.subHeader, { color: theme.accent }]}>Bimodal Deepfake Detection Interface</Text>
           </View>
 
+          {/* Interactive Target Media Workspace */}
           <TouchableOpacity 
-            style={[styles.videoPlaceholder, video && styles.videoActive]} 
+            style={[
+              styles.videoPlaceholder, 
+              { backgroundColor: theme.card, borderColor: isDarkMode ? '#364fc7' : '#ced4da' },
+              video && [styles.videoActive, { backgroundColor: isDarkMode ? '#1a1f36' : '#edf2ff', borderColor: theme.accent }]
+            ]} 
             onPress={pickVideo}
             disabled={isAnalyzing}
           >
             {video ? (
               <>
-                <MaterialCommunityIcons name="file-eye-outline" size={60} color="#a5d8ff" />
-                <Text style={styles.activePlaceholderText}>MP4 Loaded & Secured</Text>
-                <Text style={styles.videoUri} numberOfLines={1}>{video.split('/').pop()}</Text>
+                <MaterialCommunityIcons name="file-eye-outline" size={60} color={isDarkMode ? "#a5d8ff" : "#4c6ef5"} />
+                <Text style={[styles.activePlaceholderText, { color: isDarkMode ? "#a5d8ff" : "#4c6ef5" }]}>MP4 Loaded & Secured</Text>
+                <Text style={[styles.videoUri, { color: theme.accent }]} numberOfLines={1}>{video.split('/').pop()}</Text>
               </>
             ) : (
               <>
-                <MaterialCommunityIcons name="movie-search-outline" size={80} color="#748ffc" />
-                <Text style={styles.placeholderText}>Upload MP4 Video</Text>
+                <MaterialCommunityIcons name="movie-search-outline" size={80} color={theme.accent} />
+                <Text style={[styles.placeholderText, { color: theme.textMuted }]}>Upload MP4 Video</Text>
               </>
             )}
           </TouchableOpacity>
 
-          <View style={styles.resultCard}>
+          {/* System Telemetry Status Module */}
+          <View style={[styles.resultCard, { backgroundColor: theme.card, borderLeftColor: theme.accent, borderColor: theme.border }]}>
              <View style={styles.cardHeader}>
                 <MaterialCommunityIcons 
                     name={isAnalyzing ? "loading" : "cpu-64-bit"} 
                     size={24} 
-                    color="#748ffc" 
+                    color={theme.accent} 
                 />
-                <Text style={styles.cardTitle}>SYSTEM STATUS</Text>
+                <Text style={[styles.cardTitle, { color: theme.accent }]}>SYSTEM STATUS</Text>
              </View>
-             <Text style={styles.cardValue}>
+             <Text style={[styles.cardValue, { color: theme.textMain }]}>
                {isAnalyzing ? "Scanning Biometrics..." : video ? "System Primed" : "Awaiting Input"}
              </Text>
           </View>
 
+          {/* EXPLICIT EVIDENCE MAP DISPLAY LAYER */}
+          {showEvidence && (
+            <View style={[styles.evidenceContainer, { backgroundColor: theme.card, borderColor: theme.border }]}>
+              <View style={styles.evidenceHeaderGroup}>
+                <MaterialCommunityIcons name="alert-decagram" size={20} color="#ff6b6b" />
+                <Text style={styles.evidenceSectionTitle}>ISOLATED ARTIFACT EVIDENCE MAP</Text>
+              </View>
+              
+              <Text style={[styles.evidenceDescription, { color: theme.textMuted }]}>
+                Fast-Brain structural pass caught pixel blurring and boundary inconsistencies along the jaw contour.
+              </Text>
+
+              {/* Mock Frame Mapping Representation */}
+              <View style={styles.frameGrid}>
+                <View style={[styles.frameCard, { borderColor: '#ff6b6b' }]}>
+                  {/* Using standard system layout shapes for testing without external file lock steps */}
+                  <View style={styles.anomalyScanBox}>
+                    <MaterialCommunityIcons name="face-recognition" size={48} color="#ff6b6b" />
+                    <View style={styles.scannerLine} />
+                  </View>
+                  <Text style={styles.frameLabel}>FRAME #0412 - BLURRING</Text>
+                </View>
+                
+                <View style={[styles.frameCard, { borderColor: '#ff6b6b' }]}>
+                  <View style={styles.anomalyScanBox}>
+                    <MaterialCommunityIcons name="eye-off-outline" size={48} color="#ffd43b" />
+                    <View style={[styles.scannerLine, { backgroundColor: '#ffd43b', top: '70%' }]} />
+                  </View>
+                  <Text style={styles.frameLabel}>FRAME #0418 - ASYMMETRY</Text>
+                </View>
+              </View>
+
+              <View style={styles.metricRow}>
+                <Text style={styles.metricLabel}>VERDICT CONFIG : </Text>
+                <Text style={styles.metricFailValue}>DEEPFAKE IDENTIFIED (94.2% Confidence)</Text>
+              </View>
+            </View>
+          )}
+
+          {/* Pipeline Controller Trigger */}
           <TouchableOpacity 
-            style={[styles.analyzeButton, (!video || isAnalyzing) && styles.buttonDisabled]}
+            style={[styles.analyzeButton, { backgroundColor: theme.accent }, (!video || isAnalyzing) && styles.buttonDisabled]}
             onPress={handleStartAnalysis}
             disabled={!video || isAnalyzing}
           >
             {isAnalyzing ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>START BIMODAL ANALYSIS</Text>
+              <Text style={[styles.buttonText, { color: isDarkMode ? '#0b0e14' : '#ffffff' }]}>START BIMODAL ANALYSIS</Text>
             )}
           </TouchableOpacity>
 
@@ -119,31 +170,48 @@ export default function ForensicDashboard() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0b0e14' },
+  container: { flex: 1 },
   scrollContent: { flexGrow: 1, justifyContent: 'center' },
-  centeredWrapper: { padding: 30, width: '100%', alignItems: 'center' },
+  centeredWrapper: { padding: 30, width: '100%', alignItems: 'center', paddingTop: 90 },
   headerGroup: { marginBottom: 40, alignItems: 'center' },
-  header: { fontSize: 26, fontWeight: 'bold', color: '#f8f9fa', textAlign: 'center' },
-  subHeader: { fontSize: 13, color: '#748ffc', textAlign: 'center', marginTop: 8, fontWeight: '600', textTransform: 'uppercase' },
+  header: { fontSize: 24, fontWeight: 'bold', textAlign: 'center' },
+  subHeader: { fontSize: 11, textAlign: 'center', marginTop: 8, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
   videoPlaceholder: {
-    width: '100%', height: 280, backgroundColor: '#161b22', borderRadius: 24, justifyContent: 'center', alignItems: 'center',
-    borderWidth: 1.5, borderColor: '#364fc7', borderStyle: 'dashed', marginBottom: 30
+    width: '100%', height: 220, borderRadius: 24, justifyContent: 'center', alignItems: 'center',
+    borderWidth: 1.5, borderStyle: 'dashed', marginBottom: 24
   },
-  videoActive: { borderColor: '#748ffc', borderStyle: 'solid', backgroundColor: '#1a1f36' },
-  placeholderText: { color: '#495057', marginTop: 15, fontWeight: '600', fontSize: 16 },
-  activePlaceholderText: { color: '#a5d8ff', marginTop: 15, fontWeight: '700', fontSize: 16 },
-  videoUri: { color: '#748ffc', fontSize: 12, marginTop: 8, opacity: 0.8 },
+  videoActive: { borderStyle: 'solid' },
+  placeholderText: { marginTop: 15, fontWeight: '600', fontSize: 15 },
+  activePlaceholderText: { marginTop: 15, fontWeight: '700', fontSize: 15 },
+  videoUri: { fontSize: 12, marginTop: 8, opacity: 0.8, fontWeight: '600' },
   resultCard: {
-    backgroundColor: '#161b22', padding: 20, borderRadius: 18, width: '100%', marginBottom: 30,
-    alignItems: 'center', borderLeftWidth: 4, borderLeftColor: '#748ffc'
+    padding: 20, borderRadius: 18, width: '100%', marginBottom: 24,
+    alignItems: 'center', borderLeftWidth: 4, borderWidth: 1
   },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  cardTitle: { color: '#748ffc', fontSize: 12, marginLeft: 8, letterSpacing: 2, fontWeight: '800' },
-  cardValue: { fontSize: 18, fontWeight: '600', color: '#fff' },
-  analyzeButton: {
-    backgroundColor: '#5c7cfa', paddingVertical: 20, width: '100%', borderRadius: 16, alignItems: 'center',
-    elevation: 5, shadowColor: "#5c7cfa", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12,
+  cardTitle: { fontSize: 11, marginLeft: 8, letterSpacing: 2, fontWeight: '800' },
+  cardValue: { fontSize: 16, fontWeight: '700' },
+  
+  // EXPLICIT FORENSIC DISPLAY MODULE STYLING
+  evidenceContainer: {
+    width: '100%', padding: 20, borderRadius: 18, borderWidth: 1, marginBottom: 24
   },
-  buttonDisabled: { backgroundColor: '#25262b', shadowOpacity: 0 },
-  buttonText: { color: '#fff', fontWeight: '800', fontSize: 15, letterSpacing: 1.5 }
+  evidenceHeaderGroup: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  evidenceSectionTitle: { color: '#ff6b6b', fontWeight: '800', fontSize: 12, marginLeft: 8, letterSpacing: 1 },
+  evidenceDescription: { fontSize: 12, lineHeight: 18, marginBottom: 16, fontWeight: '500' },
+  frameGrid: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
+  frameCard: { width: '48%', backgroundColor: '#1c202b', borderRadius: 12, borderWidth: 1, padding: 10, alignItems: 'center' },
+  anomalyScanBox: { width: '100%', height: 90, backgroundColor: '#10121a', borderRadius: 8, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' },
+  scannerLine: { position: 'absolute', left: 0, right: 0, top: '40%', height: 2, backgroundColor: '#ff6b6b', opacity: 0.8 },
+  frameLabel: { color: '#ced4da', fontSize: 9, fontWeight: '700', marginTop: 8, letterSpacing: 0.5 },
+  metricRow: { flexDirection: 'row', borderTopWidth: 1, borderColor: '#2b303c', paddingTop: 12, justifyContent: 'center' },
+  metricLabel: { color: '#868e96', fontSize: 11, fontWeight: '700' },
+  metricFailValue: { color: '#ff6b6b', fontSize: 11, fontWeight: '800' },
+
+  analyzeButton: {
+    paddingVertical: 20, width: '100%', borderRadius: 16, alignItems: 'center',
+    elevation: 4, shadowColor: "#5c7cfa", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8,
+  },
+  buttonDisabled: { backgroundColor: '#25262b', shadowOpacity: 0, elevation: 0 },
+  buttonText: { fontWeight: '800', fontSize: 14, letterSpacing: 1.5 }
 });
