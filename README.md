@@ -69,4 +69,3 @@ For iOS Simulator: eas build --platform ios --profile preview
 
 For Both Platforms: eas build --platform all --profile preview
 
-Once completed (roughly 5-10 minutes), scan the final output terminal QR code to download your standalone build file.
